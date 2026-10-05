@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Will You Go On A Date With Me?</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ffd6e7, #d9e7ff);
+    overflow: hidden;
+  }
+  .card {
+    width: min(92vw, 560px);
+    min-height: 430px;
+    background: rgba(255,255,255,.94);
+    border-radius: 28px;
+    padding: 42px 28px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(70,50,90,.2);
+    position: relative;
+  }
+  h1 { margin: 0 0 12px; font-size: clamp(2rem, 7vw, 3.3rem); color: #ff4f81; }
+  p { color: #555; font-size: 1.15rem; }
+  .heart { font-size: 4rem; animation: pulse 1.3s infinite; }
+  @keyframes pulse { 50% { transform: scale(1.12); } }
+
+  #playArea {
+    position: relative;
+    height: 150px;
+    margin-top: 12px;
+  }
+  button {
+    border: 0;
+    border-radius: 999px;
+    padding: 15px 28px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  #yesBtn {
+    background: #ff4f81;
+    color: white;
+    box-shadow: 0 8px 18px rgba(255,79,129,.3);
+  }
+  #noBtn {
+    background: #eee;
+    color: #444;
+    position: absolute;
+    left: 56%;
+    top: 65px;
+    transition: left .18s ease, top .18s ease;
+  }
+  #message { min-height: 28px; color: #777; font-size: .95rem; }
+
+  .hidden { display: none; }
+  .step { animation: pop .3s ease; }
+  @keyframes pop { from { transform: scale(.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  .options {
+    display: grid;
+    gap: 12px;
+    margin: 24px auto;
+    max-width: 380px;
+  }
+  label { text-align: left; font-weight: bold; color: #555; }
+  input, select {
+    width: 100%;
+    padding: 14px;
+    margin-top: 7px;
+    border: 2px solid #eee;
+    border-radius: 14px;
+    font-size: 1rem;
+  }
+  .next {
+    background: #ff4f81;
+    color: white;
+    margin-top: 10px;
+  }
+  .summary {
+    background: #fff1f6;
+    border-radius: 18px;
+    padding: 18px;
+    margin: 20px 0;
+    color: #444;
+    line-height: 1.7;
+  }
+  .small { font-size: .9rem; color: #888; }
+</style>
+</head>
+<body>
+<main class="card">
+  <section id="ask" class="step">
+    <div class="heart">💗</div>
+    <h1>Will you go on a date with me?</h1>
+    <p>I have one very important question...</p>
+
+    <div id="playArea">
+      <button id="yesBtn">YES! 💕</button>
+      <button id="noBtn">No 😭</button>
+    </div>
+    <div id="message"></div>
+  </section>
+
+  <section id="dateStep" class="step hidden">
+    <div class="heart">🥰</div>
+    <h1>YAY! 💕</h1>
+    <p>Okay, let's plan it!</p>
+    <div class="options">
+      <label>
+        What date?
+        <input type="date" id="date">
+      </label>
+    </div>
+    <button class="next" id="dateNext">Next →</button>
+  </section>
+
+  <section id="timeStep" class="step hidden">
+    <div class="heart">⏰</div>
+    <h1>What time?</h1>
+    <div class="options">
+      <label>
+        Pick a time
+        <input type="time" id="time">
+      </label>
+    </div>
+    <button class="next" id="timeNext">Next →</button>
+  </section>
+
+  <section id="foodStep" class="step hidden">
+    <div class="heart">🍕</div>
+    <h1>What's for food?</h1>
+    <div class="options">
+      <label>
+        Pick your food
+        <select id="food">
+          <option value="">Choose one...</option>
+          <option>🍕 Pizza</option>
+          <option>🍔 Burgers</option>
+          <option>🌮 Tacos</option>
+          <option>🍣 Sushi</option>
+          <option>🍝 Italian</option>
+          <option>🥡 Chinese</option>
+          <option>🍗 Chicken</option>
+          <option>🥗 Something healthy</option>
+          <option>🍦 Dessert / Ice cream</option>
+          <option>🤷 You choose!</option>
+        </select>
+      </label>
+    </div>
+    <button class="next" id="finish">It's a date! 💖</button>
+  </section>
+
+  <section id="done" class="step hidden">
+    <div class="heart">💖</div>
+    <h1>It's a date!</h1>
+    <p>Perfect. Here's the plan:</p>
+    <div class="summary" id="summary"></div>
+    <p class="small">Screenshot this so neither of us forgets 😌</p>
+    <div style="margin-top:24px;">
+      <p style="font-weight:bold; color:#ff4f81; font-size:1.15rem;">Now add me on Snapchat! 👻💗</p>
+      <button class="next" onclick="alert('Add me on Snapchat! 👻💗')">Add Me 👻</button>
+    </div>
+  </section>
+</main>
+
+<script>
+const noBtn = document.getElementById('noBtn');
+const message = document.getElementById('message');
+const playArea = document.getElementById('playArea');
+
+const noMessages = [
+  "Nice try 😭",
+  "The button is shy!",
+  "Are you sure? 👀",
+  "You can't catch me!",
+  "NO is running away 😂",
+  "Maybe YES is the better option? 💕"
+];
+
+function moveNo() {
+  const area = playArea.getBoundingClientRect();
+  const btn = noBtn.getBoundingClientRect();
+  const maxX = Math.max(5, area.width - btn.width - 5);
+  const maxY = Math.max(5, area.height - btn.height - 5);
+  noBtn.style.left = Math.random() * maxX + "px";
+  noBtn.style.top = Math.random() * maxY + "px";
+  message.textContent = noMessages[Math.floor(Math.random() * noMessages.length)];
+}
+
+noBtn.addEventListener('mouseenter', moveNo);
+noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNo(); });
+noBtn.addEventListener('click', moveNo);
+
+function show(id) {
+  document.querySelectorAll('.card > section').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+document.getElementById('yesBtn').onclick = () => show('dateStep');
+
+document.getElementById('dateNext').onclick = () => {
+  if (!document.getElementById('date').value) {
+    alert("Pick a date first! 💕");
+    return;
+  }
+  show('timeStep');
+};
+
+document.getElementById('timeNext').onclick = () => {
+  if (!document.getElementById('time').value) {
+    alert("Pick a time first! ⏰");
+    return;
+  }
+  show('foodStep');
+};
+
+document.getElementById('finish').onclick = () => {
+  const date = new Date(document.getElementById('date').value + "T00:00:00");
+  const dateText = date.toLocaleDateString(undefined, {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+  });
+  const timeValue = document.getElementById('time').value;
+  const [h, m] = timeValue.split(':');
+  const timeText = new Date(2000,0,1,+h,+m).toLocaleTimeString([], {
+    hour: 'numeric', minute: '2-digit'
+  });
+  const food = document.getElementById('food').value;
+
+  if (!food) {
+    alert("Pick some food first! 🍕");
+    return;
+  }
+
+  document.getElementById('summary').innerHTML =
+    `<strong>📅 Date:</strong> ${dateText}<br>
+     <strong>⏰ Time:</strong> ${timeText}<br>
+     <strong>🍽️ Food:</strong> ${food}`;
+
+  show('done');
+};
+</script>
+</body>
+</html>
